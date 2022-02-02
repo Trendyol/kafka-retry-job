@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kafka.retry.job", "src\kafka.retry.job.csproj", "{697FA45C-A7A4-4FF9-AE2F-9BF32990A272}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{1E47BB26-3E02-49CC-A5F3-2F2C4F6A9E70}"
+ProjectSection(SolutionItems) = preProject
+	.gitignore = .gitignore
+	.gitlab-ci.yml = .gitlab-ci.yml
+	Dockerfile = Dockerfile
+	version_check.sh = version_check.sh
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kafka.retry.job.tests", "tests\kafka.retry.job.tests.csproj", "{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{697FA45C-A7A4-4FF9-AE2F-9BF32990A272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{697FA45C-A7A4-4FF9-AE2F-9BF32990A272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{697FA45C-A7A4-4FF9-AE2F-9BF32990A272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{697FA45C-A7A4-4FF9-AE2F-9BF32990A272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal

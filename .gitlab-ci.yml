@@ -1,0 +1,49 @@
+
+variables:
+  VERSION: "1.4.3"
+  DOCKER_IMAGE_VERSION: $GITLAB_REGISTRY_HOST/$CI_PROJECT_PATH:$VERSION
+  DOCKER_IMAGE_LATEST: $GITLAB_REGISTRY_HOST/$CI_PROJECT_PATH
+
+stages:
+  - Test
+  - Version Check
+  - Release
+
+.dind:
+  services:
+    - docker:19.03.5-dind
+  variables:
+    DOCKER_HOST: "tcp://localhost:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+
+Test:
+  stage: Test
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  extends: .dind
+  script:
+    - dotnet test -c Release
+  allow_failure: false
+
+Version Check:
+  stage: Version Check
+  only:
+    - master
+  script:
+    - apt-get update && apt-get install -y curl jq
+    - bash version_check.sh
+  allow_failure: true
+
+Release:
+  stage: Release
+  image: docker:19.03.5
+  extends: .dind
+  when: manual
+  only:
+    - master
+  script:
+    - docker login -u $GITLAB_REGISTRY_USER -p $GITLAB_REGISTRY_PASS $GITLAB_REGISTRY_HOST
+    - docker build -t $DOCKER_IMAGE_VERSION -t $DOCKER_IMAGE_LATEST .
+    - docker push $DOCKER_IMAGE_VERSION
+    - docker push $DOCKER_IMAGE_LATEST
+    - docker rmi $DOCKER_IMAGE_VERSION $DOCKER_IMAGE_LATEST

@@ -1,0 +1,30 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: ${CI_PROJECT_NAME}
+  namespace: ${K8S_NAMESPACE}
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: ${CI_PROJECT_NAME}
+              image: ${KAFKA_RETRY_JOB_DOCKER_IMAGE}
+              env:
+                - name: ASPNETCORE_ENVIRONMENT
+                  value: "development"
+                - name: BootstrapServers
+                  value: "localhost:9092"
+                - name: TopicRegex
+                  value: "^.*tribe-team.*error$"
+                - name: ErrorSuffix
+                  value: "error"
+                - name: RetrySuffix
+                  value: "retry"
+                - name: GroupId
+                  value: "mygroupid"
+          imagePullSecrets:
+            - name: ${GITLAB_REGISTRY_SECRET_NAME}
+          restartPolicy: OnFailure

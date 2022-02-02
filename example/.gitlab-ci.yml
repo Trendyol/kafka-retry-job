@@ -1,0 +1,33 @@
+
+variables:
+  K8S_NAMESPACE: "your-namespace"
+  KAFKA_RETRY_JOB_DOCKER_IMAGE: "KAFKA_RETRY_JOB_IMAGE"
+
+stages:
+  - Deploy DEV 🚀
+  - Deploy STAGE 🚀
+  - Deploy PROD 🚀
+
+.deploy-k8s:
+  only:
+    - master
+  script:
+    - envsubst < cronjob.yml | kubectl apply -f -
+
+Deploy Dev K8s:
+  stage: Deploy DEV 🚀
+  extends: .deploy-k8s
+  before_script:
+    - export KUBECONFIG=$YOUR_DEV_KUBECONFIG
+
+Deploy Stage K8s:
+  stage: Deploy STAGE 🚀
+  extends: .deploy-k8s
+  before_script:
+    - export KUBECONFIG=$YOUR_STAGE_KUBECONFIG
+
+Deploy Prod K8s:
+  stage: Deploy PROD 🚀
+  extends: .deploy-k8s
+  before_script:
+    - export KUBECONFIG=$YOUR_PROD_KUBECONFIG
