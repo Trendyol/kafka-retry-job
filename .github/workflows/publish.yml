@@ -18,7 +18,7 @@ jobs:
       - uses: mr-smithers-excellent/docker-build-push@v5
         name: Build & push Docker image
         with:
-          image: trendyol/kafka-retry-job
+          image: kafka-retry-job
           tags: 1.4.3, latest
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
