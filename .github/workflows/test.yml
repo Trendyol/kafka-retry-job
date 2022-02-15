@@ -1,0 +1,19 @@
+name: ci
+on:
+  push:
+    branches:
+      - '**'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out code
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0'
+      - name: Setup Docker Daemon
+        uses: docker/setup-buildx-action@v1
+      - name: Run Unit & Integration Tests
+        run: dotnet test -c Release --no-restore --no-build

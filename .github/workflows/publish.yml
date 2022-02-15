@@ -1,0 +1,27 @@
+name: ci
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  dockerize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: Check out code
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0'
+      - name: Setup Docker Daemon
+        uses: docker/setup-buildx-action@v1
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build & push Docker image
+        with:
+          image: trendyol/kafka-retry-job
+          tags: 1.4.3, latest
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_TOKEN }}
+          dockerfile: Dockerfile
+          addLatest: true
