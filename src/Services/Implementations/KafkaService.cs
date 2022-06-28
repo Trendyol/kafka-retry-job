@@ -39,29 +39,41 @@ namespace KafkaRetry.Job.Services.Implementations
 
             return producerBuilder.Build();
         }
-        
+
         public IAdminClient BuildAdminClient()
         {
             var bootstrapServers = _configuration.BootstrapServers;
             var adminClientConfig = CreateAdminClientConfig(bootstrapServers);
             var adminClientBuilder = new AdminClientBuilder(adminClientConfig);
-            
+
             return adminClientBuilder.Build();
         }
 
-        private static AdminClientConfig CreateAdminClientConfig(string bootstrapServers)
+        private AdminClientConfig CreateAdminClientConfig(string bootstrapServers)
         {
             return new AdminClientConfig
             {
-                BootstrapServers = bootstrapServers
+                BootstrapServers = bootstrapServers,
+                SaslUsername = _configuration.SaslUsername,
+                SaslPassword = _configuration.SaslPassword,
+                SslCaLocation = _configuration.SslCaLocation,
+                SaslMechanism = _configuration.SaslMechanism,
+                SecurityProtocol = _configuration.SecurityProtocol,
+                SslKeystorePassword = _configuration.SslKeystorePassword
             };
         }
 
         private ProducerConfig CreateProducerConfig(string bootstrapServers)
         {
-            return new ProducerConfig()
+            return new ProducerConfig
             {
-                BootstrapServers = bootstrapServers
+                BootstrapServers = bootstrapServers,
+                SaslUsername = _configuration.SaslUsername,
+                SaslPassword = _configuration.SaslPassword,
+                SslCaLocation = _configuration.SslCaLocation,
+                SaslMechanism = _configuration.SaslMechanism,
+                SecurityProtocol = _configuration.SecurityProtocol,
+                SslKeystorePassword = _configuration.SslKeystorePassword
             };
         }
 
@@ -72,7 +84,13 @@ namespace KafkaRetry.Job.Services.Implementations
                 BootstrapServers = bootstrapServers,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 GroupId = groupId,
-                EnableAutoCommit = false
+                EnableAutoCommit = false,
+                SaslUsername = _configuration.SaslUsername,
+                SaslPassword = _configuration.SaslPassword,
+                SslCaLocation = _configuration.SslCaLocation,
+                SaslMechanism = _configuration.SaslMechanism,
+                SecurityProtocol = _configuration.SecurityProtocol,
+                SslKeystorePassword = _configuration.SslKeystorePassword
             };
         }
     }
