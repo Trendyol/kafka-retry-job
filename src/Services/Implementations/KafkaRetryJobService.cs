@@ -29,7 +29,7 @@ namespace KafkaRetry.Job.Services.Implementations
             _logService.LogApplicationStarted();
 
             using var subscribedConsumer = _kafkaService.BuildKafkaConsumer();
-            using var assignedConsumer = _kafkaService.BuildKafkaConsumer(Guid.NewGuid().ToString());
+            using var assignedConsumer = _kafkaService.BuildKafkaConsumer($"{_configuration.GroupId}-{Guid.NewGuid()}");
             var errorTopics = GetErrorTopicsFromCluster();
 
             _logService.LogMatchingErrorTopics(errorTopics);
