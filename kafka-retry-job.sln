@@ -8,6 +8,8 @@ ProjectSection(SolutionItems) = preProject
 	.gitlab-ci.yml = .gitlab-ci.yml
 	Dockerfile = Dockerfile
 	version_check.sh = version_check.sh
+	.github\workflows\publish.yml = .github\workflows\publish.yml
+	.github\workflows\test.yml = .github\workflows\test.yml
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kafka.retry.job.tests", "tests\kafka.retry.job.tests.csproj", "{7C35FE3D-43A2-418D-8DF3-94383DE6FE2E}"

@@ -22,15 +22,6 @@ namespace KafkaRetry.Job.Services.Implementations
             return consumerBuilder.Build();
         }
 
-        public IConsumer<string, string> BuildKafkaConsumer(string groupId)
-        {
-            var bootstrapServers = _configuration.BootstrapServers;
-            var consumerConfig = CreateConsumerConfig(bootstrapServers, groupId);
-            var consumerBuilder = new ConsumerBuilder<string, string>(consumerConfig);
-
-            return consumerBuilder.Build();
-        }
-
         public IProducer<string, string> BuildKafkaProducer()
         {
             var bootstrapServers = _configuration.BootstrapServers;
@@ -54,12 +45,12 @@ namespace KafkaRetry.Job.Services.Implementations
             return new AdminClientConfig
             {
                 BootstrapServers = bootstrapServers,
-                SaslUsername = _configuration.SaslUsername,
-                SaslPassword = _configuration.SaslPassword,
-                SslCaLocation = _configuration.SslCaLocation,
+                SaslUsername = _configuration.SaslUsername ?? string.Empty,
+                SaslPassword = _configuration.SaslPassword ?? string.Empty,
+                SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
                 SaslMechanism = _configuration.SaslMechanism,
                 SecurityProtocol = _configuration.SecurityProtocol,
-                SslKeystorePassword = _configuration.SslKeystorePassword
+                SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
             };
         }
 
@@ -68,12 +59,13 @@ namespace KafkaRetry.Job.Services.Implementations
             return new ProducerConfig
             {
                 BootstrapServers = bootstrapServers,
-                SaslUsername = _configuration.SaslUsername,
-                SaslPassword = _configuration.SaslPassword,
-                SslCaLocation = _configuration.SslCaLocation,
+                SaslUsername = _configuration.SaslUsername ?? string.Empty,
+                SaslPassword = _configuration.SaslPassword ?? string.Empty,
+                SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
                 SaslMechanism = _configuration.SaslMechanism,
                 SecurityProtocol = _configuration.SecurityProtocol,
-                SslKeystorePassword = _configuration.SslKeystorePassword
+                SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
+                EnableIdempotence = true
             };
         }
 
@@ -85,12 +77,13 @@ namespace KafkaRetry.Job.Services.Implementations
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 GroupId = groupId,
                 EnableAutoCommit = false,
-                SaslUsername = _configuration.SaslUsername,
-                SaslPassword = _configuration.SaslPassword,
-                SslCaLocation = _configuration.SslCaLocation,
+                SaslUsername = _configuration.SaslUsername ?? string.Empty,
+                SaslPassword = _configuration.SaslPassword ?? string.Empty,
+                SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
                 SaslMechanism = _configuration.SaslMechanism,
                 SecurityProtocol = _configuration.SecurityProtocol,
-                SslKeystorePassword = _configuration.SslKeystorePassword
+                SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
+                EnableAutoOffsetStore = false
             };
         }
     }
