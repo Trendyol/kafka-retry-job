@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using KafkaRetry.Job.Services.Interfaces;
@@ -28,8 +27,7 @@ namespace KafkaRetry.Job.Services.Implementations
         {
             _logService.LogApplicationStarted();
 
-            using var subscribedConsumer = _kafkaService.BuildKafkaConsumer();
-            using var assignedConsumer = _kafkaService.BuildKafkaConsumer($"{_configuration.GroupId}-{Guid.NewGuid()}");
+            using var assignedConsumer = _kafkaService.BuildKafkaConsumer();
             var errorTopics = GetErrorTopicsFromCluster();
 
             _logService.LogMatchingErrorTopics(errorTopics);
@@ -43,21 +41,13 @@ namespace KafkaRetry.Job.Services.Implementations
                 foreach (var errorTopic in errorTopics)
                 {
                     _logService.LogConsumerSubscribingTopic(errorTopic);
-                    subscribedConsumer.Subscribe(errorTopic);
-                    await WaitForPartitionAssignments(subscribedConsumer, TimeSpan.FromSeconds(30));
 
-                    var assignedPartitions = subscribedConsumer.Assignment;
+                    var topicPartitions = GetTopicMetadata().First(x => x.Topic == errorTopic).Partitions;
 
-                    LogAssignedPartitions(assignedPartitions);
-                    var topicPartitionOffsets = subscribedConsumer.Committed(assignedPartitions,
-                        TimeSpan.FromSeconds(5));
-
-                    foreach (var assignedPartition in assignedPartitions)
+                    for (var partition = 0; partition < topicPartitions.Count; partition++)
                     {
-                        var offset = topicPartitionOffsets
-                            .First(tpo => tpo.Partition == assignedPartition.Partition);
-                        _logService.LogLastCommittedOffset(offset);
-                        assignedConsumer.Assign(offset);
+                        var topicPartition = new TopicPartition(errorTopic, partition);
+                        assignedConsumer.Assign(topicPartition);
 
                         while (true)
                         {
@@ -65,7 +55,7 @@ namespace KafkaRetry.Job.Services.Implementations
 
                             if (result is null)
                             {
-                                _logService.LogEndOfPartition(assignedPartition);
+                                _logService.LogEndOfPartition(topicPartition);
                                 break;
                             }
 
@@ -77,66 +67,31 @@ namespace KafkaRetry.Job.Services.Implementations
                                 break;
                             }
 
+                            result.Message.Timestamp = new Timestamp(DateTime.UtcNow);
+
                             var retryTopic =
                                 errorTopic.ReplaceAtEnd(_configuration.ErrorSuffix, _configuration.RetrySuffix);
 
                             _logService.LogProducingMessage(result, errorTopic, retryTopic);
 
                             await producer.ProduceAsync(retryTopic, result.Message);
-
-                            subscribedConsumer.Commit(result);
+                            
+                            assignedConsumer.StoreOffset(result);
+                            assignedConsumer.Commit();
                         }
-
-                        assignedConsumer.Unassign();
                     }
 
-                    subscribedConsumer.Unsubscribe();
+                    assignedConsumer.Unassign();
                 }
             }
             catch (Exception e)
             {
                 _logService.LogError(e);
+                assignedConsumer.Unassign();
                 throw;
             }
 
             _logService.LogApplicationIsClosing();
-        }
-
-        private static async Task WaitForPartitionAssignments(IConsumer<string, string> subscribedConsumer,
-            TimeSpan timeout)
-        {
-            try
-            {
-                var cts = new CancellationTokenSource(timeout);
-
-                while (!cts.IsCancellationRequested)
-                {
-                    var assignments = subscribedConsumer.Assignment;
-
-                    if (assignments.Count > 0)
-                    {
-                        return;
-                    }
-
-                    await Task.Delay(10, cts.Token);
-                }
-            }
-            catch (TaskCanceledException)
-            {
-            }
-        }
-
-        private void LogAssignedPartitions(List<TopicPartition> assignedPartitions)
-        {
-            if (assignedPartitions.Count > 0)
-            {
-                var partitions = string.Join(", ", assignedPartitions.Select(ap => ap.Partition));
-                _logService.LogAssignedPartitions(partitions);
-            }
-            else
-            {
-                _logService.LogConsumerIsNotAssigned();
-            }
         }
 
         private List<string> GetErrorTopicsFromCluster()
@@ -160,6 +115,14 @@ namespace KafkaRetry.Job.Services.Implementations
 
             var clusterTopics = metadata.Topics.Select(t => t.Topic).ToList();
             return clusterTopics;
+        }
+
+        private List<TopicMetadata> GetTopicMetadata()
+        {
+            using var adminClient = _kafkaService.BuildAdminClient();
+            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(5));
+
+            return metadata.Topics;
         }
     }
 }
