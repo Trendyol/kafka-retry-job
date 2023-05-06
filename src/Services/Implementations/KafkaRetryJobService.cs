@@ -111,7 +111,7 @@ namespace KafkaRetry.Job.Services.Implementations
         private List<string> GetClusterTopics()
         {
             using var adminClient = _kafkaService.BuildAdminClient();
-            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(5));
+            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
 
             var clusterTopics = metadata.Topics.Select(t => t.Topic).ToList();
             return clusterTopics;
@@ -120,7 +120,7 @@ namespace KafkaRetry.Job.Services.Implementations
         private List<TopicMetadata> GetTopicMetadata()
         {
             using var adminClient = _kafkaService.BuildAdminClient();
-            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(5));
+            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
 
             return metadata.Topics;
         }
