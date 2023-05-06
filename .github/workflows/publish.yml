@@ -19,7 +19,7 @@ jobs:
         name: Build & push Docker image
         with:
           image: kafka-retry-job
-          tags: 1.7.0, latest
+          tags: 1.7.1, latest
           registry: ghcr.io
           username: ${{ secrets.GHCR_USERNAME }}
           password: ${{ secrets.GHCR_TOKEN }}
