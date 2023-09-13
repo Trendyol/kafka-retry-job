@@ -28,7 +28,10 @@ namespace KafkaRetry.Job.Services.Implementations
             _logService.LogApplicationStarted();
 
             using var assignedConsumer = _kafkaService.BuildKafkaConsumer();
-            var errorTopics = GetErrorTopicsFromCluster();
+            var adminClient = _kafkaService.BuildAdminClient();
+            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
+            adminClient.Dispose();
+            var errorTopics = GetErrorTopicsFromCluster(metadata);
 
             _logService.LogMatchingErrorTopics(errorTopics);
 
@@ -42,7 +45,7 @@ namespace KafkaRetry.Job.Services.Implementations
                 {
                     _logService.LogConsumerSubscribingTopic(errorTopic);
 
-                    var topicPartitions = GetTopicMetadata().First(x => x.Topic == errorTopic).Partitions;
+                    var topicPartitions = metadata.Topics.First(x => x.Topic == errorTopic).Partitions;
 
                     for (var partition = 0; partition < topicPartitions.Count; partition++)
                     {
@@ -75,7 +78,7 @@ namespace KafkaRetry.Job.Services.Implementations
                             _logService.LogProducingMessage(result, errorTopic, retryTopic);
 
                             await producer.ProduceAsync(retryTopic, result.Message);
-                            
+
                             assignedConsumer.StoreOffset(result);
                             assignedConsumer.Commit();
                         }
@@ -94,35 +97,18 @@ namespace KafkaRetry.Job.Services.Implementations
             _logService.LogApplicationIsClosing();
         }
 
-        private List<string> GetErrorTopicsFromCluster()
+        private List<string> GetErrorTopicsFromCluster(Metadata metadata)
         {
             var topicRegex = _configuration.TopicRegex;
-            var topics = GetClusterTopics();
+            var clusterTopics = metadata.Topics.Select(t => t.Topic).ToList();
             var errorTopicRegex = new Regex(topicRegex);
 
-            var errorTopics = topics
+            var errorTopics = clusterTopics
                 .Where(t => errorTopicRegex.IsMatch(t))
                 .Where(t => t.EndsWith(_configuration.ErrorSuffix))
                 .ToList();
 
             return errorTopics;
-        }
-
-        private List<string> GetClusterTopics()
-        {
-            using var adminClient = _kafkaService.BuildAdminClient();
-            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
-
-            var clusterTopics = metadata.Topics.Select(t => t.Topic).ToList();
-            return clusterTopics;
-        }
-
-        private List<TopicMetadata> GetTopicMetadata()
-        {
-            using var adminClient = _kafkaService.BuildAdminClient();
-            var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
-
-            return metadata.Topics;
         }
     }
 }
