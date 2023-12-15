@@ -59,9 +59,14 @@ namespace KafkaRetry.Job.Services.Implementations
             _logger.LogInformation("Consumer is not assigned to any partition");
         }
 
-        public void LogConsumerSubscribingTopic(string topic)
+        public void LogStartOfSubscribingTopicPartition(TopicPartition topicPartition)
         {
-            _logger.LogInformation($"Consumer is subscribing to topic: {topic}");
+            _logger.LogInformation($"Start of partition: {topicPartition.Partition}, topic: {topicPartition.Topic}.");
+        }
+        
+        public void LogEndOfSubscribingTopicPartition(TopicPartition topicPartition)
+        {
+            _logger.LogInformation($"End of partition: {topicPartition.Partition}, topic: {topicPartition.Topic}.");
         }
 
         public void LogLastCommittedOffset(TopicPartitionOffset tpo)
@@ -78,6 +83,16 @@ namespace KafkaRetry.Job.Services.Implementations
         public void LogApplicationIsClosing()
         {
             _logger.LogInformation("Application is ending, closing consumer and producer");
+        }
+
+        public void LogFetchingErrorTopicInfoStarted()
+        {
+            _logger.LogInformation("Fetching error topic info is started");
+        }
+
+        public void LogFetchingErrorTopicInfoFinished()
+        {
+            _logger.LogInformation("Fetching error topic info is finished");
         }
     }
 }
