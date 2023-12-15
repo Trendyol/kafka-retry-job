@@ -72,8 +72,7 @@ namespace KafkaRetry.Job.Services.Implementations
 
                             result.Message.Timestamp = new Timestamp(DateTime.UtcNow);
 
-                            var retryTopic =
-                                errorTopic.ReplaceAtEnd(_configuration.ErrorSuffix, _configuration.RetrySuffix);
+                            var retryTopic = GetRetryTopicName(result, errorTopic);
 
                             _logService.LogProducingMessage(result, errorTopic, retryTopic);
 
@@ -95,6 +94,14 @@ namespace KafkaRetry.Job.Services.Implementations
             }
 
             _logService.LogApplicationIsClosing();
+        }
+        
+        private string GetRetryTopicName(ConsumeResult<string,string> result , string errorTopic )
+        {
+            return !string.IsNullOrEmpty(_configuration.RetryTopicNameInHeader) && 
+                   result.Message.Headers.TryGetLastBytes(_configuration.RetryTopicNameInHeader, out var retryTopicInHeader) ?
+                System.Text.Encoding.UTF8.GetString(retryTopicInHeader) :
+                errorTopic.ReplaceAtEnd(_configuration.ErrorSuffix, _configuration.RetrySuffix);
         }
 
         private List<string> GetErrorTopicsFromCluster(Metadata metadata)
