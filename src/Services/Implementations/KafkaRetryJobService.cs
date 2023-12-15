@@ -41,6 +41,8 @@ namespace KafkaRetry.Job.Services.Implementations
 
             var utcNow = DateTime.UtcNow;
 
+            var consumerCommitStrategy= _kafkaService.GetConsumerCommitStrategy();
+            
             try
             {
                 var messageConsumeLimit = _configuration.MessageConsumeLimit;
@@ -95,8 +97,7 @@ namespace KafkaRetry.Job.Services.Implementations
 
                         await producer.ProduceAsync(retryTopic, result.Message);
 
-                        assignedConsumer.StoreOffset(result);
-                        assignedConsumer.Commit();
+                        consumerCommitStrategy.Invoke(assignedConsumer, result);
                     }
                     
                     _logService.LogEndOfSubscribingTopicPartition(topicPartition);

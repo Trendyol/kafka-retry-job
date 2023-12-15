@@ -1,3 +1,4 @@
+using System;
 using Confluent.Kafka;
 using KafkaRetry.Job.Services.Interfaces;
 
@@ -85,6 +86,20 @@ namespace KafkaRetry.Job.Services.Implementations
                 SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
                 EnableAutoOffsetStore = false
             };
+        }
+        
+        public Action<IConsumer<string, string>, ConsumeResult<string, string>> GetConsumerCommitStrategy()
+        {
+            return _configuration.EnableAutoCommit ?
+                (assignedConsumer, result) =>
+                {
+                    assignedConsumer.StoreOffset(result);
+                } :
+                (assignedConsumer, result) =>
+                {
+                    assignedConsumer.StoreOffset(result);
+                    assignedConsumer.Commit();
+                };
         }
     }
 }

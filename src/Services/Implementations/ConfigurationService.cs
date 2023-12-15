@@ -21,6 +21,7 @@ namespace KafkaRetry.Job.Services.Implementations
         public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
         public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
         public long MessageConsumeLimit => GetValue<long?>("MessageConsumeLimit") ?? Int64.MaxValue;
+        public bool EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
         public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");
         public string SaslUsername => GetValue<string>("SaslUsername");
         public string SaslPassword => GetValue<string>("SaslPassword");
