@@ -43,8 +43,18 @@ namespace KafkaRetry.Job.Services.Implementations
 
             try
             {
+                var messageConsumeLimit = _configuration.MessageConsumeLimit;
+                if (messageConsumeLimit <= 0)
+                {
+                    _logService.LogMessageConsumeLimitIsZero();
+                }
+                
                 foreach (var (topicPartition, lag) in errorTopicPartitionsWithLag)
                 {
+                    if (messageConsumeLimit <= 0)
+                    {
+                        break;
+                    }
                     if (lag <= 0)
                     {
                         continue;
@@ -57,7 +67,7 @@ namespace KafkaRetry.Job.Services.Implementations
                     
                     assignedConsumer.Assign(topicPartition);
 
-                    while (currentLag > 0)
+                    while (currentLag > 0 && messageConsumeLimit > 0)
                     {
                         var result = assignedConsumer.Consume(TimeSpan.FromSeconds(3));
 
@@ -67,6 +77,7 @@ namespace KafkaRetry.Job.Services.Implementations
                         }
 
                         currentLag -= 1;
+                        messageConsumeLimit -= 1;
 
                         var resultDate = result.Message.Timestamp.UtcDateTime;
 

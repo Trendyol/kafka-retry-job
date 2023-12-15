@@ -20,5 +20,6 @@ namespace KafkaRetry.Job.Services.Interfaces
         void LogApplicationIsClosing();
         void LogFetchingErrorTopicInfoStarted();
         void LogFetchingErrorTopicInfoFinished();
+        public void LogMessageConsumeLimitIsZero();
     }
 }

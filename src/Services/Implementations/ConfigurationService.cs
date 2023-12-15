@@ -1,3 +1,4 @@
+using System;
 using Confluent.Kafka;
 using KafkaRetry.Job.Exceptions;
 using KafkaRetry.Job.Helpers;
@@ -19,6 +20,7 @@ namespace KafkaRetry.Job.Services.Implementations
         public string ErrorSuffix => GetValueOrThrowInvalidConfigException("ErrorSuffix");
         public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
         public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
+        public long MessageConsumeLimit => GetValue<long?>("MessageConsumeLimit") ?? Int64.MaxValue;
         public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");
         public string SaslUsername => GetValue<string>("SaslUsername");
         public string SaslPassword => GetValue<string>("SaslPassword");

@@ -94,5 +94,10 @@ namespace KafkaRetry.Job.Services.Implementations
         {
             _logger.LogInformation("Fetching error topic info is finished");
         }
+        
+        public void LogMessageConsumeLimitIsZero()
+        {
+            _logger.LogError("Parameter MessageConsumeLimit cannot be zero");
+        }
     }
 }
