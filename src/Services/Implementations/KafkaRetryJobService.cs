@@ -49,6 +49,7 @@ namespace KafkaRetry.Job.Services.Implementations
                 if (messageConsumeLimit <= 0)
                 {
                     _logService.LogMessageConsumeLimitIsZero();
+                    return;
                 }
                 
                 foreach (var (topicPartition, lag) in errorTopicPartitionsWithLag)
