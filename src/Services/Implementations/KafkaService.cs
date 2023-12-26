@@ -77,14 +77,14 @@ namespace KafkaRetry.Job.Services.Implementations
                 BootstrapServers = bootstrapServers,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 GroupId = groupId,
-                EnableAutoCommit = false,
+                EnableAutoCommit = _configuration.EnableAutoCommit,
                 SaslUsername = _configuration.SaslUsername ?? string.Empty,
                 SaslPassword = _configuration.SaslPassword ?? string.Empty,
                 SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
                 SaslMechanism = _configuration.SaslMechanism,
                 SecurityProtocol = _configuration.SecurityProtocol,
                 SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
-                EnableAutoOffsetStore = false
+                EnableAutoOffsetStore = _configuration.EnableAutoOffsetStore,
             };
         }
         
