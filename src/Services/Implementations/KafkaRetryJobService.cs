@@ -143,7 +143,7 @@ namespace KafkaRetry.Job.Services.Implementations
 
             var topicPartitionInfos = topicsWithFoundOffsets.Select<TopicPartitionOffset, (TopicPartition, long)>(tpo => {
                 var watermark = assignedConsumer.QueryWatermarkOffsets(tpo.TopicPartition, TimeSpan.FromSeconds(5));
-                var lag = tpo.Offset >= 0 ? watermark.High - tpo.Offset : 0; 
+                var lag = tpo.Offset >= 0 ? watermark.High - tpo.Offset : watermark.High - watermark.Low; 
                 return (tpo.TopicPartition, lag);
             }).ToList();
 
