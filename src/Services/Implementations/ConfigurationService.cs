@@ -20,7 +20,7 @@ namespace KafkaRetry.Job.Services.Implementations
         public string ErrorSuffix => GetValueOrThrowInvalidConfigException("ErrorSuffix");
         public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
         public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
-        public long MessageConsumeLimit => GetValue<long?>("MessageConsumeLimit") ?? Int64.MaxValue;
+        public long MessageConsumeLimitPerTopicPartition => GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
         public bool EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
         public bool EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore") ?? false;
         public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");

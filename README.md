@@ -27,7 +27,7 @@ Here is the explanation of environment variables. Please note that the config pr
 - Retry Suffix: The suffix of retry topics
 - GroupId: GroupId for Retry Job Consumer
 - RetryTopicNameInHeader: Retry topic name that will be presented in the header of each message to transfer them corresponding retry topic
-- MessageConsumeLimit: Limit the total number of messages that can be consumed
+- MessageConsumeLimitPerTopicPartition: Limit the total number of messages that can be consumed for a topic partition
 - EnableAutoCommit: Enable/disable auto commit config
 - EnableAutoOffsetStore: Enable/disable auto offset store config 
 

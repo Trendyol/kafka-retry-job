@@ -4,7 +4,7 @@
 
 **Closed issues:**
 
-- [\#18](https://github.com/Trendyol/kafka-retry-job/issues/18) moves messages with limit given from config
+- [\#18](https://github.com/Trendyol/kafka-retry-job/issues/18) moves messages with limit for each topic partition given from config 
 - [\#24](https://github.com/Trendyol/kafka-retry-job/issues/24) check if error topic is empty without assigning and consuming message
 - [\#25](https://github.com/Trendyol/kafka-retry-job/issues/25) get retry topic name from header of error message
 - [\#27](https://github.com/Trendyol/kafka-retry-job/issues/27) get auto-commit , manuel commit options from config
