@@ -1,3 +1,4 @@
+using System;
 using Confluent.Kafka;
 using KafkaRetry.Job.Exceptions;
 using KafkaRetry.Job.Helpers;
@@ -18,6 +19,10 @@ namespace KafkaRetry.Job.Services.Implementations
         public string TopicRegex => GetValueOrThrowInvalidConfigException("TopicRegex");
         public string ErrorSuffix => GetValueOrThrowInvalidConfigException("ErrorSuffix");
         public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
+        public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
+        public long MessageConsumeLimitPerTopicPartition => GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
+        public bool EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
+        public bool EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore") ?? false;
         public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");
         public string SaslUsername => GetValue<string>("SaslUsername");
         public string SaslPassword => GetValue<string>("SaslPassword");

@@ -1,3 +1,4 @@
+using System;
 using Confluent.Kafka;
 using KafkaRetry.Job.Services.Interfaces;
 
@@ -76,15 +77,29 @@ namespace KafkaRetry.Job.Services.Implementations
                 BootstrapServers = bootstrapServers,
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 GroupId = groupId,
-                EnableAutoCommit = false,
+                EnableAutoCommit = _configuration.EnableAutoCommit,
                 SaslUsername = _configuration.SaslUsername ?? string.Empty,
                 SaslPassword = _configuration.SaslPassword ?? string.Empty,
                 SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
                 SaslMechanism = _configuration.SaslMechanism,
                 SecurityProtocol = _configuration.SecurityProtocol,
                 SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
-                EnableAutoOffsetStore = false
+                EnableAutoOffsetStore = _configuration.EnableAutoOffsetStore,
             };
+        }
+        
+        public Action<IConsumer<string, string>, ConsumeResult<string, string>> GetConsumerCommitStrategy()
+        {
+            return _configuration.EnableAutoCommit ?
+                (assignedConsumer, result) =>
+                {
+                    assignedConsumer.StoreOffset(result);
+                } :
+                (assignedConsumer, result) =>
+                {
+                    assignedConsumer.StoreOffset(result);
+                    assignedConsumer.Commit();
+                };
         }
     }
 }

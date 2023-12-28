@@ -31,61 +31,78 @@ namespace KafkaRetry.Job.Services.Implementations
             var adminClient = _kafkaService.BuildAdminClient();
             var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
             adminClient.Dispose();
-            var errorTopics = GetErrorTopicsFromCluster(metadata);
-
+            
+            var errorTopicPartitionsWithLag = GetErrorTopicInfosFromCluster(assignedConsumer, metadata);
+            var errorTopics = errorTopicPartitionsWithLag.Select(p => p.Item1.Topic).Distinct().ToList();
+            
             _logService.LogMatchingErrorTopics(errorTopics);
 
             using var producer = _kafkaService.BuildKafkaProducer();
 
             var utcNow = DateTime.UtcNow;
 
+            var consumerCommitStrategy= _kafkaService.GetConsumerCommitStrategy();
+            
             try
             {
-                foreach (var errorTopic in errorTopics)
+                var messageConsumeLimit = _configuration.MessageConsumeLimitPerTopicPartition;
+                if (messageConsumeLimit <= 0)
                 {
-                    _logService.LogConsumerSubscribingTopic(errorTopic);
-
-                    var topicPartitions = metadata.Topics.First(x => x.Topic == errorTopic).Partitions;
-
-                    for (var partition = 0; partition < topicPartitions.Count; partition++)
-                    {
-                        var topicPartition = new TopicPartition(errorTopic, partition);
-                        assignedConsumer.Assign(topicPartition);
-
-                        while (true)
-                        {
-                            var result = assignedConsumer.Consume(TimeSpan.FromSeconds(3));
-
-                            if (result is null)
-                            {
-                                _logService.LogEndOfPartition(topicPartition);
-                                break;
-                            }
-
-                            var resultDate = result.Message.Timestamp.UtcDateTime;
-
-                            if (utcNow < resultDate)
-                            {
-                                _logService.LogNewMessageArrived(utcNow);
-                                break;
-                            }
-
-                            result.Message.Timestamp = new Timestamp(DateTime.UtcNow);
-
-                            var retryTopic =
-                                errorTopic.ReplaceAtEnd(_configuration.ErrorSuffix, _configuration.RetrySuffix);
-
-                            _logService.LogProducingMessage(result, errorTopic, retryTopic);
-
-                            await producer.ProduceAsync(retryTopic, result.Message);
-
-                            assignedConsumer.StoreOffset(result);
-                            assignedConsumer.Commit();
-                        }
-                    }
-
-                    assignedConsumer.Unassign();
+                    _logService.LogMessageConsumeLimitIsZero();
+                    return;
                 }
+                
+                foreach (var (topicPartition, lag) in errorTopicPartitionsWithLag)
+                {
+                    if (lag <= 0)
+                    {
+                        continue;
+                    }
+                    
+                    var messageConsumeLimitForTopicPartition = messageConsumeLimit;
+                    _logService.LogStartOfSubscribingTopicPartition(topicPartition);
+                    
+                    var errorTopic = topicPartition.Topic;
+                    var currentLag = lag;
+                    
+                    assignedConsumer.Assign(topicPartition);
+
+                    while (currentLag > 0 && messageConsumeLimitForTopicPartition > 0)
+                    {
+                        var result = assignedConsumer.Consume(TimeSpan.FromSeconds(3));
+
+                        if (result is null)
+                        {
+                            break;
+                        }
+
+                        currentLag -= 1;
+                        messageConsumeLimitForTopicPartition -= 1;
+
+                        var resultDate = result.Message.Timestamp.UtcDateTime;
+
+                        if (utcNow < resultDate)
+                        {
+                            _logService.LogNewMessageArrived(utcNow);
+                            break;
+                        }
+
+                        result.Message.Timestamp = new Timestamp(DateTime.UtcNow);
+
+                        var retryTopic = GetRetryTopicName(result, errorTopic);
+
+                        _logService.LogProducingMessage(result, errorTopic, retryTopic);
+
+                        await producer.ProduceAsync(retryTopic, result.Message);
+
+                        consumerCommitStrategy.Invoke(assignedConsumer, result);
+                    }
+                    
+                    _logService.LogEndOfSubscribingTopicPartition(topicPartition);
+                }
+
+                assignedConsumer.Unassign();
+                
             }
             catch (Exception e)
             {
@@ -97,18 +114,39 @@ namespace KafkaRetry.Job.Services.Implementations
             _logService.LogApplicationIsClosing();
         }
 
-        private List<string> GetErrorTopicsFromCluster(Metadata metadata)
+        private string GetRetryTopicName(ConsumeResult<string,string> result , string errorTopic )
         {
+            return !string.IsNullOrEmpty(_configuration.RetryTopicNameInHeader) && 
+                result.Message.Headers.TryGetLastBytes(_configuration.RetryTopicNameInHeader, out var retryTopicInHeader) ?
+                    System.Text.Encoding.UTF8.GetString(retryTopicInHeader) :
+                    errorTopic.ReplaceAtEnd(_configuration.ErrorSuffix, _configuration.RetrySuffix);
+        }
+        
+        private List<(TopicPartition, long)> GetErrorTopicInfosFromCluster(IConsumer<string, string> assignedConsumer, Metadata metadata)
+        {
+            _logService.LogFetchingErrorTopicInfoStarted();
+            
             var topicRegex = _configuration.TopicRegex;
-            var clusterTopics = metadata.Topics.Select(t => t.Topic).ToList();
             var errorTopicRegex = new Regex(topicRegex);
 
-            var errorTopics = clusterTopics
-                .Where(t => errorTopicRegex.IsMatch(t))
-                .Where(t => t.EndsWith(_configuration.ErrorSuffix))
-                .ToList();
+            var topicPartitionMetadata = metadata.Topics
+                .Where(t => errorTopicRegex.IsMatch(t.Topic))
+                .SelectMany(topic =>
+                    topic.Partitions.Select(partition => 
+                        new TopicPartition(topic.Topic, partition.PartitionId)))
+                .ToArray();
 
-            return errorTopics;
+            var topicsWithFoundOffsets = assignedConsumer.Committed(topicPartitionMetadata, TimeSpan.FromSeconds(10));
+
+            var topicPartitionInfos = topicsWithFoundOffsets.Select<TopicPartitionOffset, (TopicPartition, long)>(tpo => {
+                var watermark = assignedConsumer.QueryWatermarkOffsets(tpo.TopicPartition, TimeSpan.FromSeconds(5));
+                var lag = tpo.Offset >= 0 ? watermark.High - tpo.Offset : watermark.High - watermark.Low; 
+                return (tpo.TopicPartition, lag);
+            }).ToList();
+
+            _logService.LogFetchingErrorTopicInfoFinished();
+            
+            return topicPartitionInfos;
         }
     }
 }

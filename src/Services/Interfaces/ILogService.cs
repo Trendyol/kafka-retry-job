@@ -13,9 +13,13 @@ namespace KafkaRetry.Job.Services.Interfaces
         void LogProducingMessage(ConsumeResult<string, string> result, string errorTopic, string retryTopic);
         void LogAssignedPartitions(string partitions);
         void LogConsumerIsNotAssigned();
-        void LogConsumerSubscribingTopic(string topic);
+        void LogStartOfSubscribingTopicPartition(TopicPartition topicPartition);
+        void LogEndOfSubscribingTopicPartition(TopicPartition topicPartition);
         void LogLastCommittedOffset(TopicPartitionOffset tpo);
         void LogNewMessageArrived(DateTime utcNow);
         void LogApplicationIsClosing();
+        void LogFetchingErrorTopicInfoStarted();
+        void LogFetchingErrorTopicInfoFinished();
+        public void LogMessageConsumeLimitIsZero();
     }
 }
