@@ -58,7 +58,4 @@ Contributions are what make the open source community such an amazing place to b
 Distributed under the MIT License. See [`LICENSE`](https://choosealicense.com/licenses/mit/) for more information.
 
 ## Contact
-
-Nuri Doğaç Akyıldız - [Github](https://github.com/dogac00) - [ndakyildiz@gmail.com](mailto:ndakyildiz@gmail.com)
-
 Mehmet Fırat Kömürcü - [Github](https://github.com/MehmetFiratKomurcu) - [mehmetfiratkomurcu@hotmail.com](mailto:mehmetfiratkomurcu@hotmail.com)
