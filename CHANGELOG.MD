@@ -1,6 +1,11 @@
 # Changelog
 
-## [1.11.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/v1.16.4) (2024-01)
+## [1.11.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-01)
+
+**Closed issues:**
+
+- [\#17](https://github.com/Trendyol/kafka-retry-job/issues/17) Read configurations from file path given from configuration
+
 ## [1.10.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2023-12)
 
 **Closed issues:**
