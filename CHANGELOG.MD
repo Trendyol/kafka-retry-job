@@ -6,6 +6,11 @@
 
 - [\#17](https://github.com/Trendyol/kafka-retry-job/issues/17) Read configurations from file path given from configuration
 
+**Merged pull requests:**
+
+- Pull Request for the issues #17 [\#17](https://github.com/Trendyol/kafka-retry-job/pull/17) ([cnrdmrci](https://github.com/cnrdmrci))
+
+
 ## [1.10.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2023-12)
 
 **Closed issues:**
