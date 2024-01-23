@@ -16,6 +16,7 @@ Kafka Retry Job is a Kubernetes CronJob. When the job starts, it selects all top
 - Configurability: The user can specify error topics via Regex. Also can specify Error Suffix and Retry Suffix.
 - Scalability: The project can work in parallel, so you can deploy to various machine for availablity etc.
 - Schedulability: Can work at the given interval.
+- Config Management: You can seperate your configs and secrets in order to secure your passwords. For this purpose you can use ```./configs/config.json``` and ```./configs/secret.json```
 
 ### Configs
 

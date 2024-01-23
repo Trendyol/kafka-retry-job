@@ -24,6 +24,8 @@ namespace KafkaRetry.Job
         {
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", true)
+                .AddJsonFile("configs/config.json", true, true)
+                .AddJsonFile("configs/secret.json", true, true)
                 .AddCommandLine(args)
                 .AddEnvironmentVariables()
                 .Build();
