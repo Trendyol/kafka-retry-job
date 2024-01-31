@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.12.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-01)
+
+**Closed issues:**
+
+- [\#14](https://github.com/Trendyol/kafka-retry-job/issues/14) Get Kafka Producer Configs from Configuration
+
+**Merged pull requests:**
+
+- Pull Request for the issues #14 [\#33](https://github.com/Trendyol/kafka-retry-job/pull/33) ([elifbayrakdar](https://github.com/elifbayrakdar))
+
+
 ## [1.11.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-01)
 
 **Closed issues:**

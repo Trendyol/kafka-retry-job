@@ -30,7 +30,15 @@ Here is the explanation of environment variables. Please note that the config pr
 - RetryTopicNameInHeader: Retry topic name that will be presented in the header of each message to transfer them corresponding retry topic
 - MessageConsumeLimitPerTopicPartition: Limit the total number of messages that can be consumed for a topic partition
 - EnableAutoCommit: Enable/disable auto commit config
-- EnableAutoOffsetStore: Enable/disable auto offset store config 
+- EnableAutoOffsetStore: Enable/disable auto offset store config
+- ProducerEnableIdempotence: EnableIdempotence property of Confluent Kafka ProducerConfig
+- ProducerAcks: Acks property of Confluent Kafka ProducerConfig
+- ProducerBatchSize: BatchSize property of Confluent Kafka ProducerConfig
+- ProducerClientId: ClientId property of Confluent Kafka ProducerConfig
+- ProducerLingerMs: LingerMs property of Confluent Kafka ProducerConfig
+- ProducerMessageTimeoutMs: MessageTimeoutMs property of Confluent Kafka ProducerConfig
+- ProducerRequestTimeoutMs: RequestTimeoutMs property of Confluent Kafka ProducerConfig
+- ProducerMessageMaxBytes: MessageMaxBytes property of Confluent Kafka ProducerConfig 
 
 ## Getting Started
 
