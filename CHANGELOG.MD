@@ -8,7 +8,7 @@
 
 **Merged pull requests:**
 
-- Pull Request for the issues #14 [\#33](https://github.com/Trendyol/kafka-retry-job/pull/33) ([elifbayrakdar](https://github.com/elifbayrakdar))
+- Pull Request for the issues #14 [\#34](https://github.com/Trendyol/kafka-retry-job/pull/34) ([elifbayrakdar](https://github.com/elifbayrakdar))
 
 
 ## [1.11.0](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-01)
