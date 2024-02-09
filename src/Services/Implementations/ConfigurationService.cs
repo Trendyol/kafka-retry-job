@@ -37,7 +37,7 @@ public class ConfigurationService
     public bool EnableIdempotence => GetValue<bool?>("ProducerEnableIdempotence") ??
                                      Constants.ProducerConfigDefaults.EnableIdempotence;
 
-    public Acks? Acks => GetValue<Acks?>("ProducerAcks") ?? Constants.ProducerConfigDefaults.Acks;
+    public Acks? Acks => GetValue<Acks?>("ProducerAcks");
 
     public int BatchSize =>
         GetValue<int?>("ProducerBatchSize") ?? Constants.ProducerConfigDefaults.BatchSize;

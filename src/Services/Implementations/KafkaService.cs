@@ -57,7 +57,7 @@ public class KafkaService : IKafkaService
 
     private ProducerConfig CreateProducerConfig(string bootstrapServers)
     {
-        return new ProducerConfig
+        var producerConfig = new ProducerConfig
         {
             BootstrapServers = bootstrapServers,
             SaslUsername = _configuration.SaslUsername ?? string.Empty,
@@ -67,7 +67,6 @@ public class KafkaService : IKafkaService
             SecurityProtocol = _configuration.SecurityProtocol,
             SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
             EnableIdempotence = _configuration.EnableIdempotence,
-            Acks = _configuration.Acks,
             BatchSize = _configuration.BatchSize,
             ClientId = _configuration.ClientId,
             LingerMs = _configuration.LingerMs,
@@ -75,6 +74,12 @@ public class KafkaService : IKafkaService
             RequestTimeoutMs = _configuration.RequestTimeoutMs,
             MessageMaxBytes = _configuration.MessageMaxBytes
         };
+
+        if (_configuration.Acks is not null)
+        {
+            producerConfig.Acks = _configuration.Acks;
+        }
+        return producerConfig;
     }
 
     private ConsumerConfig CreateConsumerConfig(string bootstrapServers, string groupId)
