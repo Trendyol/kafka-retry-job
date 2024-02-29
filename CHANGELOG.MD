@@ -9,7 +9,7 @@
 
 **Merged pull requests:**
 
-- Pull Request for the issues #15 #35 ([ahmetfurkankavraz](https://github.com/ahmetfurkankavraz))
+- Pull Request for the issues #15 [\#35](https://github.com/Trendyol/kafka-retry-job/pull/38) ([ahmetfurkankavraz](https://github.com/ahmetfurkankavraz))
 
 ## [1.12.1](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-02)
 
