@@ -1,5 +1,6 @@
 using System;
 using Confluent.Kafka;
+using KafkaRetry.Job.Helpers.KafkaConfigs;
 using KafkaRetry.Job.Services.Interfaces;
 
 namespace KafkaRetry.Job.Services.Implementations;
@@ -41,63 +42,66 @@ public class KafkaService : IKafkaService
         return adminClientBuilder.Build();
     }
 
+    private ClientConfig CreateClientConfig(string bootstrapServers)
+    {
+        ClientConfig clientConfig = new ClientConfig()
+            .WithBootstrapServers(bootstrapServers)
+            .WithClientId(_configuration.ClientId)
+            .WithMessageMaxBytes(_configuration.MessageMaxBytes);
+        
+        if (_configuration.SaslMechanism is not null)
+        {
+            clientConfig = clientConfig
+                .WithSaslUsername(_configuration.SaslUsername)
+                .WithSaslPassword(_configuration.SaslPassword)
+                .WithSslCaLocation(_configuration.SslCaLocation)
+                .WithSaslMechanism(_configuration.SaslMechanism)
+                .WithSecurityProtocol(_configuration.SecurityProtocol)
+                .WithSslKeystorePassword(_configuration.SslKeystorePassword);
+        }
+        
+        if (_configuration.Acks is not null)
+        {
+            clientConfig = clientConfig
+                .WithAcks(_configuration.Acks);
+        }
+
+        return clientConfig;
+    }
+    
     private AdminClientConfig CreateAdminClientConfig(string bootstrapServers)
     {
-        return new AdminClientConfig
-        {
-            BootstrapServers = bootstrapServers,
-            SaslUsername = _configuration.SaslUsername ?? string.Empty,
-            SaslPassword = _configuration.SaslPassword ?? string.Empty,
-            SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
-            SaslMechanism = _configuration.SaslMechanism,
-            SecurityProtocol = _configuration.SecurityProtocol,
-            SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty
-        };
+        ClientConfig clientConfig = CreateClientConfig(bootstrapServers);
+        return new AdminClientConfig(clientConfig);
     }
 
     private ProducerConfig CreateProducerConfig(string bootstrapServers)
     {
-        var producerConfig = new ProducerConfig
-        {
-            BootstrapServers = bootstrapServers,
-            SaslUsername = _configuration.SaslUsername ?? string.Empty,
-            SaslPassword = _configuration.SaslPassword ?? string.Empty,
-            SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
-            SaslMechanism = _configuration.SaslMechanism,
-            SecurityProtocol = _configuration.SecurityProtocol,
-            SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
-            EnableIdempotence = _configuration.EnableIdempotence,
-            BatchSize = _configuration.BatchSize,
-            ClientId = _configuration.ClientId,
-            LingerMs = _configuration.LingerMs,
-            MessageTimeoutMs = _configuration.MessageTimeoutMs,
-            RequestTimeoutMs = _configuration.RequestTimeoutMs,
-            MessageMaxBytes = _configuration.MessageMaxBytes
-        };
+        ClientConfig clientConfig = CreateClientConfig(bootstrapServers);
+        ProducerConfig producerConfig = new ProducerConfig(clientConfig);
 
-        if (_configuration.Acks is not null)
-        {
-            producerConfig.Acks = _configuration.Acks;
-        }
+        producerConfig = producerConfig
+            .WithEnableIdempotence(_configuration.EnableIdempotence)
+            .WithBatchSize(_configuration.BatchSize)
+            .WithLingerMs(_configuration.LingerMs)
+            .WithMessageTimeoutMs(_configuration.MessageTimeoutMs)
+            .WithRequestTimeoutMs(_configuration.RequestTimeoutMs);
+        
         return producerConfig;
     }
 
     private ConsumerConfig CreateConsumerConfig(string bootstrapServers, string groupId)
     {
-        return new ConsumerConfig
-        {
-            BootstrapServers = bootstrapServers,
-            AutoOffsetReset = AutoOffsetReset.Earliest,
-            GroupId = groupId,
-            EnableAutoCommit = _configuration.EnableAutoCommit,
-            SaslUsername = _configuration.SaslUsername ?? string.Empty,
-            SaslPassword = _configuration.SaslPassword ?? string.Empty,
-            SslCaLocation = _configuration.SslCaLocation ?? string.Empty,
-            SaslMechanism = _configuration.SaslMechanism,
-            SecurityProtocol = _configuration.SecurityProtocol,
-            SslKeystorePassword = _configuration.SslKeystorePassword ?? string.Empty,
-            EnableAutoOffsetStore = _configuration.EnableAutoOffsetStore
-        };
+        ClientConfig clientConfig = CreateClientConfig(bootstrapServers);
+        ConsumerConfig consumerConfig = new ConsumerConfig(clientConfig);
+        
+        consumerConfig = consumerConfig
+            .WithGroupId(groupId)
+            .WithAutoOffsetReset(AutoOffsetReset.Earliest)
+            .WithEnableAutoCommit(_configuration.EnableAutoCommit)
+            .WithEnableAutoOffsetStore(_configuration.EnableAutoOffsetStore);
+        
+        return consumerConfig;
     }
         
     public Action<IConsumer<string, string>, ConsumeResult<string, string>> GetConsumerCommitStrategy()
