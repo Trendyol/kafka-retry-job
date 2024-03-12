@@ -47,25 +47,15 @@ public class KafkaService : IKafkaService
         ClientConfig clientConfig = new ClientConfig()
             .WithBootstrapServers(bootstrapServers)
             .WithClientId(_configuration.ClientId)
-            .WithMessageMaxBytes(_configuration.MessageMaxBytes);
+            .WithMessageMaxBytes(_configuration.MessageMaxBytes)
+            .WithSaslUsername(_configuration.SaslUsername)
+            .WithSaslPassword(_configuration.SaslPassword)
+            .WithSslCaLocation(_configuration.SslCaLocation)
+            .WithSaslMechanism(_configuration.SaslMechanism)
+            .WithSecurityProtocol(_configuration.SecurityProtocol)
+            .WithSslKeystorePassword(_configuration.SslKeystorePassword)
+            .WithAcks(_configuration.Acks);
         
-        if (_configuration.SaslMechanism is not null)
-        {
-            clientConfig = clientConfig
-                .WithSaslUsername(_configuration.SaslUsername)
-                .WithSaslPassword(_configuration.SaslPassword)
-                .WithSslCaLocation(_configuration.SslCaLocation)
-                .WithSaslMechanism(_configuration.SaslMechanism)
-                .WithSecurityProtocol(_configuration.SecurityProtocol)
-                .WithSslKeystorePassword(_configuration.SslKeystorePassword);
-        }
-        
-        if (_configuration.Acks is not null)
-        {
-            clientConfig = clientConfig
-                .WithAcks(_configuration.Acks);
-        }
-
         return clientConfig;
     }
     
@@ -106,7 +96,7 @@ public class KafkaService : IKafkaService
         
     public Action<IConsumer<string, string>, ConsumeResult<string, string>> GetConsumerCommitStrategy()
     {
-        return _configuration.EnableAutoCommit ?
+        return _configuration.EnableAutoCommit is true ?
             (assignedConsumer, result) =>
             {
                 assignedConsumer.StoreOffset(result);

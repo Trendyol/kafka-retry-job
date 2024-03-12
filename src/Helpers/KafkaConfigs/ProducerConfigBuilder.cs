@@ -6,25 +6,37 @@ public static class ProducerConfigBuilder
 {
     public static ProducerConfig WithEnableIdempotence(this ProducerConfig config, bool? idempotence)
     {
-        config.EnableIdempotence = idempotence;
+        if (idempotence is not null)
+        {
+            config.EnableIdempotence = idempotence;
+        }
         return config;
     }
     
     public static ProducerConfig WithBatchSize(this ProducerConfig config, int? batchSize)
     {
-        config.BatchSize = batchSize;
+        if (batchSize is not null)
+        {
+            config.BatchSize = batchSize;
+        }
         return config;
     }
     
     public static ProducerConfig WithLingerMs(this ProducerConfig config, double? lingerMs)
     {
-        config.LingerMs = lingerMs;
+        if (lingerMs is not null)
+        {
+            config.LingerMs = lingerMs;
+        }
         return config;
     }
     
     public static ProducerConfig WithMessageTimeoutMs(this ProducerConfig config, int? messageTimeoutMs)
     {
-        config.MessageTimeoutMs = messageTimeoutMs;
+        if (messageTimeoutMs is not null)
+        {
+            config.MessageTimeoutMs = messageTimeoutMs;
+        }
         return config;
     }
     
