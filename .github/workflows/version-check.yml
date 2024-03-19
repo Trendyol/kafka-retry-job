@@ -20,8 +20,9 @@ jobs:
           
       - name: Read Tags from publish.yml
         id: read-tags
-        run: echo "::set-output name=tags::$(awk '/tags/{print $2}' .github/workflows/publish.yml)"
+        run: echo "{version}=$(awk '/tags/{print $2}' .github/workflows/publish.yml)" >> $GITHUB_OUTPUT "
         
       - name: Use Output
         id: output
-        run: echo "Output is ${{ steps.set_output_step.outputs.tags }}"
+        run: echo "Output is ${{ steps.read-tags.outputs.version }}"
+        
