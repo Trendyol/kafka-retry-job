@@ -12,15 +12,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
-      - name: Print current path
-        id: path
-        run: echo "Current file path $GITHUB_WORKSPACE"
           
-      - name: Read Tags from publish.yml
-        id: read_tags
+      - name: Get previous version
+        id: previous_version
         run: |
-          version=$(awk '/tags/{print $2}' .github/workflows/publish.yml | sed 's/,$//')
+          $(git show HEAD~1:.github/workflows/publish.yml)
+          version=$(git show HEAD~1:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "version=$version" >> $GITHUB_ENV
         
       - name: Use Output
