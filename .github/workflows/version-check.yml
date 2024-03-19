@@ -52,5 +52,5 @@ jobs:
             exit 1
           fi
           
-          echo "$version is equal to $previous_version"
+          echo "Please update the version. Current version: $version is equal to previous version: $previous_version"
           exit 1
