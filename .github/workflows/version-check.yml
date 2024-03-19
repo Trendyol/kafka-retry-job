@@ -19,9 +19,12 @@ jobs:
           
       - name: Read Tags from publish.yml
         id: read_tags
-        run: echo "##[set-output name=version]$(awk '/tags/{print $2}' .github/workflows/publish.yml) | sed 's/,$//' "
+        run: |
+          tags=$(awk '/tags/{print $2}' .github/workflows/publish.yml)
+          tags_without_comma=${tags%,}
+          echo "tags::$tags_without_comma" >> $GITHUB_ENV
         
       - name: Use Output
         id: output
-        run: echo "Output is ${{ steps.read_tags.outputs.version }}"
+        run: echo "Output is ${{ $tags_without_comma }}"
         
