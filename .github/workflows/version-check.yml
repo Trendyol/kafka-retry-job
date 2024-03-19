@@ -23,5 +23,5 @@ jobs:
         
       - name: Use Output
         id: output
-        run: echo "Output is ${ steps.read_tags.outputs.version }"
+        run: echo "Output is ${{ steps.read_tags.outputs.version }}"
         
