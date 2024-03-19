@@ -12,6 +12,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        
+      - name: Print current path
+        id: path
+        run: echo "Current file path $GITHUB_WORKSPACE"
 
       - name: Read Tags from publish.yml
         id: read-tags
