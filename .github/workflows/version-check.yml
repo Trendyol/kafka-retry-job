@@ -23,7 +23,7 @@ jobs:
       - name: Get main version
         id: version
         run: |
-          version=$(git show HEAD:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
+          version=$(git show main:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "version=$version" >> $GITHUB_ENV
         
       - name: Use Output
