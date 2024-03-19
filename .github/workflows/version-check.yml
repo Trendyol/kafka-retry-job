@@ -44,7 +44,7 @@ jobs:
           for i in "${!version_parts[@]}"; do
             if [ "${version_parts[i]}" -lt "${main_version_parts[i]}" ]; then
               echo "$version is less than $main_version"
-              exit 0
+              exit 1
             elif [ "${version_parts[i]}" -gt "${main_version_parts[i]}" ]; then
               echo "$version is greater than $main_version"
               exit 0
