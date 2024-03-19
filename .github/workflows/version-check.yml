@@ -1,0 +1,18 @@
+name: Version Verification
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read Tags from publish.yml
+        id: read-tags
+        run: echo "::set-output name=tags::$(awk '/tags/{print $2}' publish.yml)"
