@@ -20,7 +20,7 @@ jobs:
           previous_version=$(git show $commit_sha:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "previous_version=$previous_version" >> $GITHUB_ENV
           
-      - name: Get version
+      - name: Get main version
         id: version
         run: |
           version=$(git show HEAD:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
@@ -31,4 +31,10 @@ jobs:
         run: |
           echo "Output is $version"
           echo "Output is $previous_version"
-        
+          
+      - name: Compare versions
+        id: compare_versions
+        run: |
+          if [ "$version" <= "$previous_version" ]; then
+            echo "Please update the version."
+            exit 1
