@@ -17,6 +17,11 @@ jobs:
         id: path
         run: echo "Current file path $GITHUB_WORKSPACE"
 
+          
       - name: Read Tags from publish.yml
         id: read-tags
         run: echo "::set-output name=tags::$(awk '/tags/{print $2}' .github/workflows/publish.yml)"
+        
+      - name: Use Output
+        id: output
+        run: echo "Output is ${{ steps.set_output_step.outputs.tags }}"
