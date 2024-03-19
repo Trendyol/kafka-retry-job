@@ -26,5 +26,5 @@ jobs:
         
       - name: Use Output
         id: output
-        run: echo "Output is ${{ $tags_without_comma }}"
+        run: echo "Output is $tags_without_comma"
         
