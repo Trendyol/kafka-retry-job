@@ -16,14 +16,16 @@ jobs:
       - name: Get version
         id: version
         run: |
-          commit_sha=$(git log --pretty=format:%H -n 1)
           version=$(git show HEAD:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "version=$version" >> $GITHUB_ENV
           
-      - name: Get main version
-        id: main_version
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           ref: main
+          
+      - name: Get main version
+        id: main_version
         run: |
           main_version=$(git show HEAD:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "main_version=$main_version" >> $GITHUB_ENV
