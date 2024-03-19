@@ -16,7 +16,6 @@ jobs:
       - name: Get previous version
         id: previous_version
         run: |
-          $(git show HEAD~1:.github/workflows/publish.yml)
           version=$(git show HEAD~1:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
           echo "version=$version" >> $GITHUB_ENV
         
