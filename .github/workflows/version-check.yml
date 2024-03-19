@@ -16,13 +16,12 @@ jobs:
       - name: Print current path
         id: path
         run: echo "Current file path $GITHUB_WORKSPACE"
-
           
       - name: Read Tags from publish.yml
-        id: read-tags
+        id: read_tags
         run: echo "{version}={$(awk '/tags/{print $2}' .github/workflows/publish.yml)}" >> $GITHUB_OUTPUT
         
       - name: Use Output
         id: output
-        run: echo "Output is ${{ steps.read-tags.outputs.version }}"
+        run: echo "Output is ${{ steps.read_tags.outputs.version }}"
         
