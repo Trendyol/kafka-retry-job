@@ -35,6 +35,22 @@ jobs:
       - name: Compare versions
         id: compare_versions
         run: |
-          if [ "$version" <= "$previous_version" ]; then
-            echo "Please update the version."
+          IFS='.' read -ra version_parts <<< "$version"
+          IFS='.' read -ra previous_version_parts <<< "$previous_version"
+          for i in "${!version_parts[@]}"; do
+            if [ "${version_parts[i]}" -lt "${previous_version_parts[i]}" ]; then
+              echo "$version is less than $previous_version"
+              exit 0
+            elif [ "${version_parts[i]}" -gt "${previous_version_parts[i]}" ]; then
+              echo "$version is greater than $previous_version"
+              exit 0
+            fi
+          done
+          
+          if [ "${version_parts[@]}" != "${previous_version_parts[@]}" ]; then
+            echo "Error: $previous_version is greater than $version"
             exit 1
+          fi
+          
+          echo "$version is equal to $previous_version"
+          exit 1
