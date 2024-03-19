@@ -19,4 +19,4 @@ jobs:
 
       - name: Read Tags from publish.yml
         id: read-tags
-        run: echo "::set-output name=tags::$(awk '/tags/{print $2}' publish.yml)"
+        run: echo "::set-output name=tags::$(awk '/tags/{print $2}' .github/workflows/publish.yml)"
