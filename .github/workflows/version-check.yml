@@ -18,7 +18,7 @@ jobs:
         run: |
           commit_sha=$(git log --pretty=format:%H -n 1)
           previous_version=$(git show $commit_sha:.github/workflows/publish.yml | awk '/tags/{print $2}' | sed 's/,$//')
-          echo "previous_version=previous_version" >> $GITHUB_ENV
+          echo "previous_version=$previous_version" >> $GITHUB_ENV
           
       - name: Get version
         id: version
