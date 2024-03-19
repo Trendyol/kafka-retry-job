@@ -3,7 +3,7 @@ name: Version Verification
 on:
   push:
     branches:
-      - main
+      - '**'
 
 jobs:
   verify-version:
