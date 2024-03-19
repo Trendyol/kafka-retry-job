@@ -20,7 +20,7 @@ jobs:
           
       - name: Read Tags from publish.yml
         id: read-tags
-        run: echo "{version}=$(awk '/tags/{print $2}' .github/workflows/publish.yml)" >> $GITHUB_OUTPUT "
+        run: echo "{version}=$(awk '/tags/{print $2}' .github/workflows/publish.yml)" >> $GITHUB_OUTPUT
         
       - name: Use Output
         id: output
