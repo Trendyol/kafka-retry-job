@@ -4,7 +4,7 @@
 
 **Closed issues:**
 
-- [\#20](https://github.com/Trendyol/kafka-retry-job/issues/36) Add version check workflow to compare main and current version
+- [\#20](https://github.com/Trendyol/kafka-retry-job/issues/20) Add version check workflow to compare main and current version
 
 **Merged pull requests:**
 
