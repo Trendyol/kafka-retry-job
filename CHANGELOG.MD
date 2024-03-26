@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.12.3](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
+
+- [\#15](https://github.com/Trendyol/kafka-retry-job/issues/15) Fix integration tests
+- [\#35](https://github.com/Trendyol/kafka-retry-job/issues/35) Use Builder pattern to read configurations
+
+**Merged pull requests:**
+
+- Pull Request for the issues #15 [\#35](https://github.com/Trendyol/kafka-retry-job/pull/38) ([ahmetfurkankavraz](https://github.com/ahmetfurkankavraz))
+
 ## [1.12.2](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
 
 **Closed issues:**

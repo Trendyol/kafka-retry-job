@@ -1,8 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Modules;
-using DotNet.Testcontainers.Containers.WaitStrategies;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 using DotNet.Testcontainers.Images;
 
 namespace KafkaRetry.Job.Tests.Containers
@@ -10,7 +9,7 @@ namespace KafkaRetry.Job.Tests.Containers
     public class ZookeeperContainer
     {
         private const int Port = 2181;
-        private readonly TestcontainersContainer _container;
+        private readonly IContainer _container;
 
         public string Address => $"{_container.IpAddress}:{Port}";
 
@@ -22,7 +21,7 @@ namespace KafkaRetry.Job.Tests.Containers
                 dockerHost = "unix:/var/run/docker.sock";
             }
 
-            _container = new TestcontainersBuilder<TestcontainersContainer>()
+            _container = new ContainerBuilder()
                 .WithDockerEndpoint(dockerHost)
                 .WithImage(new DockerImage("zookeeper"))
                 .WithExposedPort(Port)

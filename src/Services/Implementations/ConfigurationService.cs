@@ -21,11 +21,10 @@ public class ConfigurationService
     public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
     public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
 
-    public long MessageConsumeLimitPerTopicPartition =>
-        GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
+    public long MessageConsumeLimitPerTopicPartition => GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
 
-    public bool EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
-    public bool EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore") ?? false;
+    public bool? EnableAutoCommit => GetValue<bool?>("EnableAutoCommit");
+    public bool? EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore");
     public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");
     public string SaslUsername => GetValue<string>("SaslUsername");
     public string SaslPassword => GetValue<string>("SaslPassword");
@@ -33,30 +32,15 @@ public class ConfigurationService
     public SaslMechanism? SaslMechanism => GetValue<SaslMechanism?>("SaslMechanism");
     public string SslKeystorePassword => GetValue<string>("SslKeystorePassword");
     public SecurityProtocol? SecurityProtocol => GetValue<SecurityProtocol?>("SecurityProtocol");
-
-    public bool EnableIdempotence => GetValue<bool?>("ProducerEnableIdempotence") ??
-                                     Constants.ProducerConfigDefaults.EnableIdempotence;
-
+    public bool? EnableIdempotence => GetValue<bool?>("ProducerEnableIdempotence");
     public Acks? Acks => GetValue<Acks?>("ProducerAcks");
-
-    public int BatchSize =>
-        GetValue<int?>("ProducerBatchSize") ?? Constants.ProducerConfigDefaults.BatchSize;
-
-    public string ClientId =>
-        GetValue<string>("ProducerClientId") ?? Constants.ProducerConfigDefaults.ClientId;
-
-    public double LingerMs =>
-        GetValue<double?>("ProducerLingerMs") ?? Constants.ProducerConfigDefaults.LingerMs;
-
-    public int MessageTimeoutMs => GetValue<int?>("ProducerMessageTimeoutMs") ??
-                                   Constants.ProducerConfigDefaults.MessageTimeoutMs;
-
-    public int RequestTimeoutMs => GetValue<int?>("ProducerRequestTimeoutMs") ??
-                                   Constants.ProducerConfigDefaults.RequestTimeoutMs;
-
-    public int MessageMaxBytes => GetValue<int?>("ProducerMessageMaxBytes") ??
-                                  Constants.ProducerConfigDefaults.MessageMaxBytes;
-
+    public int? BatchSize => GetValue<int?>("ProducerBatchSize");
+    public string ClientId => GetValue<string>("ProducerClientId");
+    public double? LingerMs => GetValue<double?>("ProducerLingerMs");
+    public int? MessageTimeoutMs => GetValue<int?>("ProducerMessageTimeoutMs");
+    public int? RequestTimeoutMs => GetValue<int?>("ProducerRequestTimeoutMs");
+    public int? MessageMaxBytes => GetValue<int?>("ProducerMessageMaxBytes");
+    
     private string GetValueOrThrowInvalidConfigException(string configName)
     {
         var configValue = _configuration.GetValue<string>(configName);

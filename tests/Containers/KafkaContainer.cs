@@ -1,17 +1,15 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using DotNet.Testcontainers.Containers.Builders;
-using DotNet.Testcontainers.Containers.Modules;
-using DotNet.Testcontainers.Containers.OutputConsumers;
-using DotNet.Testcontainers.Containers.WaitStrategies;
+using DotNet.Testcontainers.Builders;
+using DotNet.Testcontainers.Containers;
 
 namespace KafkaRetry.Job.Tests.Containers
 {
     public class KafkaContainer
     {
         private const int Port = 9092;
-        private readonly TestcontainersContainer _container;
+        private readonly IContainer _container;
 
         private readonly Stream _outStream = new MemoryStream();
         private readonly Stream _errorStream = new MemoryStream();
@@ -24,7 +22,7 @@ namespace KafkaRetry.Job.Tests.Containers
                 dockerHost = "unix:/var/run/docker.sock";
             }
 
-            _container = new TestcontainersBuilder<TestcontainersContainer>()
+            _container = new ContainerBuilder()
                 .WithDockerEndpoint(dockerHost)
                 .WithImage("confluentinc/cp-kafka:6.0.1")
                 .WithExposedPort(Port)
