@@ -28,5 +28,6 @@ namespace KafkaRetry.Job
             services.AddSerilog(_configuration);
             services.AddScoped<ILogService, LogService>();
         }
+        
     }
 }
