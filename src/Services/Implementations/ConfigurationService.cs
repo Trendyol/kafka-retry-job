@@ -23,8 +23,8 @@ public class ConfigurationService
 
     public long MessageConsumeLimitPerTopicPartition => GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
 
-    public bool? EnableAutoCommit => GetValue<bool?>("EnableAutoCommit");
-    public bool? EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore");
+    public bool? EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
+    public bool? EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore") ?? false;
     public string GroupId => GetValueOrThrowInvalidConfigException("GroupId");
     public string SaslUsername => GetValue<string>("SaslUsername");
     public string SaslPassword => GetValue<string>("SaslPassword");
