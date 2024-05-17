@@ -40,6 +40,7 @@ public class ConfigurationService
     public int? MessageTimeoutMs => GetValue<int?>("ProducerMessageTimeoutMs");
     public int? RequestTimeoutMs => GetValue<int?>("ProducerRequestTimeoutMs");
     public int? MessageMaxBytes => GetValue<int?>("ProducerMessageMaxBytes");
+    public int MaxLevelParallelism => GetValue<int?>("MaxLevelParallelism") ?? 1;
     
     private string GetValueOrThrowInvalidConfigException(string configName)
     {
