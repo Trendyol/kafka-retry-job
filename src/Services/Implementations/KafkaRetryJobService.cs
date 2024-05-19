@@ -29,21 +29,19 @@ namespace KafkaRetry.Job.Services.Implementations
         {
             _logService.LogApplicationStarted();
             
-            var adminClient = _kafkaService.BuildAdminClient();
+            var adminClient = _kafkaService.GetKafkaAdminClient();
             var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(120));
-            adminClient.Dispose();
-            
-            var assignedConsumerPool = new ThreadLocal<IConsumer<string, string>>(() => _kafkaService.BuildKafkaConsumer());
-            var producerPool = new ThreadLocal<IProducer<string, string>>(() => _kafkaService.BuildKafkaProducer());
-            
-            var errorTopicsWithLag = GetErrorTopicInfosFromCluster(assignedConsumerPool.Value, metadata);
+            _kafkaService.ReleaseKafkaAdminClient(ref adminClient);
+
+            var consumer = _kafkaService.GetKafkaConsumer();
+            var errorTopicsWithLag = GetErrorTopicInfosFromCluster(consumer, metadata);
             var errorTopics = errorTopicsWithLag.Keys.ToList();
             
             _logService.LogMatchingErrorTopics(errorTopics);
             
             var consumerCommitStrategy= _kafkaService.GetConsumerCommitStrategy();
             
-            var messageConsumeLimit = _configuration.MessageConsumeLimitPerTopicPartition;
+            var messageConsumeLimit = _configuration.MessageConsumeLimitPerTopic;
             if (messageConsumeLimit <= 0)
             {
                 _logService.LogMessageConsumeLimitIsZero();
@@ -59,47 +57,45 @@ namespace KafkaRetry.Job.Services.Implementations
                 await semaphore.WaitAsync();
                 tasks.Add(Task.Run(async () =>
                     {
-                        await MoveMessagesForTopic(topicPartitionsWithLag, assignedConsumerPool, producerPool,
-                            consumerCommitStrategy);
+                        await MoveMessagesForTopic(topicPartitionsWithLag, consumerCommitStrategy);
                         semaphore.Release();
                     }));
             }
-
-            Task.WaitAll(tasks.ToArray());
-            assignedConsumerPool.Value.Dispose();
+            
+            await Task.WhenAll(tasks.ToArray());
             
             _logService.LogApplicationIsClosing();
         }
 
         private async Task MoveMessagesForTopic(
             List<(TopicPartition, long)> topicPartitionsWithLag, 
-            ThreadLocal<IConsumer<string, string>> assignedConsumerPool, 
-            ThreadLocal<IProducer<string, string>> producerPool,
             Action<IConsumer<string,string>, ConsumeResult<string,string>> consumerCommitStrategy
-        ) {
-            var assignedConsumer = assignedConsumerPool.Value;
-            var producer = producerPool.Value;
+        )
+        {
+            var consumer = _kafkaService.GetKafkaConsumer();
+            var producer = _kafkaService.GetKafkaProducer();
+            
+            var messageConsumeLimitPerTopic = _configuration.MessageConsumeLimitPerTopic;
             
             foreach (var (topicPartition, lag) in topicPartitionsWithLag)
             {
-                var errorTopic = topicPartition.Topic;
                 if (lag <= 0)
                 {
                     continue;
                 }
-                
+                var errorTopic = topicPartition.Topic;
+
                 try
                 {
-                    var messageConsumeLimitForTopicPartition = _configuration.MessageConsumeLimitPerTopicPartition;
                     _logService.LogStartOfSubscribingTopicPartition(topicPartition);
-                    
-                    var currentLag = lag;
-                    
-                    assignedConsumer.Assign(topicPartition);
 
-                    while (currentLag > 0 && messageConsumeLimitForTopicPartition > 0)
+                    var currentLag = lag;
+
+                    consumer.Assign(topicPartition);
+                    
+                    while (currentLag > 0 && messageConsumeLimitPerTopic > 0)
                     {
-                        var result = assignedConsumer.Consume(TimeSpan.FromSeconds(3));
+                        var result = consumer.Consume(TimeSpan.FromSeconds(3));
 
                         if (result is null)
                         {
@@ -107,29 +103,31 @@ namespace KafkaRetry.Job.Services.Implementations
                         }
 
                         currentLag -= 1;
-                        messageConsumeLimitForTopicPartition -= 1;
-                    
+                        messageConsumeLimitPerTopic -= 1;
+
                         result.Message.Timestamp = new Timestamp(DateTime.UtcNow);
 
                         var retryTopic = GetRetryTopicName(result, errorTopic);
-
+                        
                         _logService.LogProducingMessage(result, errorTopic, retryTopic);
-
+                        
                         await producer.ProduceAsync(retryTopic, result.Message);
 
-                        consumerCommitStrategy.Invoke(assignedConsumer, result);
+                        consumerCommitStrategy.Invoke(consumer, result);
                     }
-                
-                    assignedConsumer.Unassign();
                     
                     _logService.LogEndOfSubscribingTopicPartition(topicPartition);
                 }
                 catch (Exception e)
                 {
                     _logService.LogError(e);
-                    assignedConsumer.Unassign();
-                    throw;
-                }    
+                }
+                finally
+                {
+                    consumer.Unassign();
+                    _kafkaService.ReleaseKafkaConsumer(ref consumer);
+                    _kafkaService.ReleaseKafkaProducer(ref producer);
+                }
             }
         }
 
