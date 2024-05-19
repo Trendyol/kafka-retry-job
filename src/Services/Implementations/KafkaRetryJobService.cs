@@ -99,7 +99,7 @@ namespace KafkaRetry.Job.Services.Implementations
 
                         if (result is null)
                         {
-                            break;
+                            continue;
                         }
 
                         currentLag -= 1;
