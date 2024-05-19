@@ -95,7 +95,7 @@ namespace KafkaRetry.Job.Services.Implementations
                     
                     while (currentLag > 0 && messageConsumeLimitPerTopic > 0)
                     {
-                        var result = consumer.Consume(TimeSpan.FromSeconds(3));
+                        var result = consumer.Consume(TimeSpan.FromSeconds(10));
 
                         if (result is null)
                         {
