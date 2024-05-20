@@ -72,9 +72,6 @@ namespace KafkaRetry.Job.Services.Implementations
             Action<IConsumer<string,string>, ConsumeResult<string,string>> consumerCommitStrategy
         )
         {
-            var consumer = _kafkaService.GetKafkaConsumer();
-            var producer = _kafkaService.GetKafkaProducer();
-            
             var messageConsumeLimitPerTopic = _configuration.MessageConsumeLimitPerTopic;
             
             foreach (var (topicPartition, lag) in topicPartitionsWithLag)
@@ -83,6 +80,8 @@ namespace KafkaRetry.Job.Services.Implementations
                 {
                     continue;
                 }
+                var consumer = _kafkaService.GetKafkaConsumer();
+                var producer = _kafkaService.GetKafkaProducer();
                 var errorTopic = topicPartition.Topic;
 
                 try
@@ -95,7 +94,7 @@ namespace KafkaRetry.Job.Services.Implementations
                     
                     while (currentLag > 0 && messageConsumeLimitPerTopic > 0)
                     {
-                        var result = consumer.Consume(TimeSpan.FromSeconds(10));
+                        var result = consumer.Consume(TimeSpan.FromSeconds(3));
 
                         if (result is null)
                         {
