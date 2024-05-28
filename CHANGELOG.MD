@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.12.4](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
+
+- [\#29](https://github.com/Trendyol/kafka-retry-job/issues/29) Add async programming to consume message in parallel
+- [\#30](https://github.com/Trendyol/kafka-retry-job/issues/30) Catch exception based on Partitions
+- [\#44](https://github.com/Trendyol/kafka-retry-job/issues/44) Limit message consumption based on Topic instead of Topic Partition
+
+**Merged pull requests:**
+
+- Pull Request for the issues #29, #30, #44 [\#43](https://github.com/Trendyol/kafka-retry-job/pull/43) ([ahmetfurkankavraz](https://github.com/ahmetfurkankavraz))
+
 ## [1.12.3](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
 
 - [\#15](https://github.com/Trendyol/kafka-retry-job/issues/15) Fix integration tests
