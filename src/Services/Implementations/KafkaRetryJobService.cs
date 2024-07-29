@@ -57,8 +57,14 @@ namespace KafkaRetry.Job.Services.Implementations
                 await semaphore.WaitAsync();
                 tasks.Add(Task.Run(async () =>
                     {
-                        await MoveMessagesForTopic(topicPartitionsWithLag, consumerCommitStrategy);
-                        semaphore.Release();
+                        try
+                        {
+                            await MoveMessagesForTopic(topicPartitionsWithLag, consumerCommitStrategy);
+                        }
+                        finally
+                        {
+                            semaphore.Release();
+                        }
                     }));
             }
             
