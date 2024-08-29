@@ -21,7 +21,7 @@ public class ConfigurationService
     public string RetrySuffix => GetValueOrThrowInvalidConfigException("RetrySuffix");
     public string RetryTopicNameInHeader => GetValue<string>("RetryTopicNameInHeader");
 
-    public long MessageConsumeLimitPerTopicPartition => GetValue<long?>("MessageConsumeLimitPerTopicPartition") ?? Int64.MaxValue;
+    public long MessageConsumeLimitPerTopic => GetValue<long?>("MessageConsumeLimitPerTopic") ?? Int64.MaxValue;
 
     public bool? EnableAutoCommit => GetValue<bool?>("EnableAutoCommit") ?? false;
     public bool? EnableAutoOffsetStore => GetValue<bool?>("EnableAutoOffsetStore") ?? false;
@@ -40,6 +40,7 @@ public class ConfigurationService
     public int? MessageTimeoutMs => GetValue<int?>("ProducerMessageTimeoutMs");
     public int? RequestTimeoutMs => GetValue<int?>("ProducerRequestTimeoutMs");
     public int? MessageMaxBytes => GetValue<int?>("ProducerMessageMaxBytes");
+    public int MaxLevelParallelism => GetValue<int?>("MaxLevelParallelism") ?? 1;
     
     private string GetValueOrThrowInvalidConfigException(string configName)
     {
