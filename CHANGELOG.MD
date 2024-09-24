@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.5](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
+
+- [\#46](https://github.com/Trendyol/kafka-retry-job/issues/46) Fixes the bug that keeps running the app alive when there is a lag, but no message in the topic partition
+
+**Merged pull requests:**
+
+- Pull Request for the issues #46 [\#46](https://github.com/Trendyol/kafka-retry-job/pull/46) ([ahmetfurkankavraz](https://github.com/ahmetfurkankavraz))
+
 ## [1.12.4](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
 
 - [\#29](https://github.com/Trendyol/kafka-retry-job/issues/29) Add async programming to consume message in parallel
