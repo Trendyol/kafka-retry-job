@@ -1,3 +1,5 @@
+
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/Trendyol/kafka-retry-job/badge)](https://scorecard.dev/viewer/?uri=github.com/Trendyol/kafka-retry-job)
 ##  Introduction
 
 Kafka Retry Job is an open-source project for moving Kafka messages from error topics to retry topics, developed by Trendyol with love ![:orange_heart:](https://a.slack-edge.com/production-standard-emoji-assets/13.0/apple-medium/1f9e1.png)
