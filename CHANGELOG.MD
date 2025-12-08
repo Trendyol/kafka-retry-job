@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.12.6](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-12)
+
+- Update .NET version from 5.0 to 7.0 in CI/CD pipelines
+- Fix GitHub Actions workflow to use .NET 7.0 and update action versions
+- Update GitLab CI to use .NET SDK 7.0
+
 ## [1.12.5](https://github.com/github-changelog-generator/github-changelog-generator/tree/1.16.4) (2024-03)
 
 - [\#46](https://github.com/Trendyol/kafka-retry-job/issues/46) Fixes the bug that keeps running the app alive when there is a lag, but no message in the topic partition
