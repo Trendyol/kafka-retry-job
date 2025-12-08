@@ -1,6 +1,6 @@
 
 variables:
-  VERSION: "1.12.5"
+  VERSION: "1.12.6"
   DOCKER_IMAGE_VERSION: $GITLAB_REGISTRY_HOST/$CI_PROJECT_PATH:$VERSION
   DOCKER_IMAGE_LATEST: $GITLAB_REGISTRY_HOST/$CI_PROJECT_PATH
 
@@ -19,7 +19,7 @@ stages:
 
 Test:
   stage: Test
-  image: mcr.microsoft.com/dotnet/sdk:5.0
+  image: mcr.microsoft.com/dotnet/sdk:7.0
   extends: .dind
   script:
     - dotnet test -c Release
